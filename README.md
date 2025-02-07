@@ -15,9 +15,11 @@ Running the Application
 1. Start the Backend
 
 cd server
+
 node server.js
 
 2. Start the Frontend
 
 cd client
+
 npm start
