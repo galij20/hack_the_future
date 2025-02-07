@@ -5,6 +5,9 @@ import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { ArrowRight } from 'lucide-react'
 import { getAIRecommendations, bookTrip } from '@/app/services/tripService'
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { format } from "date-fns";
 
 interface Trip {
     id: number
@@ -22,6 +25,16 @@ interface Hotel {
     imageUrl: string
 }
 
+// Add this style for the popup
+const popupStyles = `
+  .react-datepicker {
+    z-index: 10000 !important;
+  }
+  .react-datepicker__triangle {
+    z-index: 10001 !important;
+  }
+`;
+
 export default function TripPage() {
   const [view, setView] = useState<'history' | 'plan'>('history')
   const [recommendations, setRecommendations] = useState<Trip[]>([])
@@ -29,8 +42,20 @@ export default function TripPage() {
   const [selectedTrip, setSelectedTrip] = useState<Trip | null>(null)
   const [showHotels, setShowHotels] = useState(false)
   const [destination, setDestination] = useState('')
-  const [days, setDays] = useState('')
-  const [budget, setBudget] = useState('')
+  const [date, setDate] = useState<{
+    from: Date | undefined;
+    to: Date | undefined;
+  }>({
+    from: undefined,
+    to: undefined,
+  });
+
+  // Calculate days when dates change
+  const days = date.from && date.to 
+    ? Math.ceil(Math.abs(date.to.getTime() - date.from.getTime()) / (1000 * 60 * 60 * 24))
+    : 0;
+
+  const [budget, setBudget] = useState('');
 
   const handlePlanTrip = async () => {
     if (!destination || !days || !budget) {
@@ -41,7 +66,7 @@ export default function TripPage() {
     try {
       const data = await getAIRecommendations(
         destination, 
-        parseInt(days), 
+        days,
         parseFloat(budget)
       )
       setRecommendations(data)
@@ -126,19 +151,57 @@ export default function TripPage() {
                   />
                 </div>
                 <div className="space-y-2 transition-all duration-200 hover:transform hover:scale-[1.01]">
-                  <label className="text-sm font-medium text-gray-700">Number of Days</label>
-                  <Input
-                    type="number"
-                    placeholder="e.g., 7"
-                    value={days}
-                    onChange={(e) => setDays(e.target.value)}
-                    className="h-12 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 transition-all duration-200 hover:border-blue-400 focus:border-blue-500 focus:ring-blue-500"
-                  />
+                  <label className="text-sm font-medium text-gray-700">Trip Dates</label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="w-full h-12 justify-start text-left font-normal bg-white border-gray-300 hover:bg-gray-50"
+                      >
+                        {date?.from ? (
+                          date.to ? (
+                            <>
+                              {format(date.from, "PPP")} - {format(date.to, "PPP")}
+                            </>
+                          ) : (
+                            format(date.from, "PPP")
+                          )
+                        ) : (
+                          <span>Pick a date</span>
+                        )}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        initialFocus
+                        mode="range"
+                        defaultMonth={date?.from}
+                        selected={date}
+                        onSelect={(range) => {
+                          if (range) {
+                            setDate({ from: range.from, to: range.to });
+                          } else {
+                            setDate({ from: undefined, to: undefined });
+                          }
+                        }}
+                        numberOfMonths={2}
+                        disabled={(date) =>
+                          date < new Date(new Date().setHours(0, 0, 0, 0))
+                        }
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  {days > 0 && (
+                    <p className="text-sm text-gray-600">
+                      Selected duration: {days} day{days > 1 ? 's' : ''}
+                    </p>
+                  )}
                 </div>
                 <div className="space-y-2 transition-all duration-200 hover:transform hover:scale-[1.01]">
                   <label className="text-sm font-medium text-gray-700">Total Trip Budget ($)</label>
                   <Input
                     type="number"
+                    min="1"
                     placeholder="e.g., 2000"
                     value={budget}
                     onChange={(e) => setBudget(e.target.value)}
@@ -192,7 +255,7 @@ export default function TripPage() {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {selectedTrip.hotels
-                  .filter(hotel => !budget || hotel.price * parseInt(days) <= parseFloat(budget))
+                  .filter(hotel => !budget || hotel.price * days <= parseFloat(budget))
                   .map((hotel) => (
                   <Card key={hotel.id} className="flex flex-col overflow-hidden bg-white/90 backdrop-blur-sm shadow-lg border border-gray-200 transition-all duration-200 ease-in-out hover:shadow-xl hover:border-blue-200 hover:-translate-y-1">
                     {hotel.imageUrl && (
@@ -202,7 +265,7 @@ export default function TripPage() {
                           alt={hotel.name}
                           className="absolute inset-0 w-full h-full object-cover"
                         />
-                        {hotel.price * parseInt(days) <= parseFloat(budget) && (
+                        {hotel.price * days <= parseFloat(budget) && (
                           <div className="absolute top-2 right-2 bg-green-500 text-white px-2 py-1 rounded-full text-sm">
                             Within Budget
                           </div>
@@ -227,7 +290,7 @@ export default function TripPage() {
                       <div className="mt-4">
                         <p className="text-lg font-semibold text-gray-900">${hotel.price} per night</p>
                         <p className="text-sm text-gray-600">
-                          Total: ${hotel.price * parseInt(days)} for {days} nights
+                          Total: ${hotel.price * days} for {days} nights
                         </p>
                       </div>
                     </CardContent>
@@ -295,4 +358,3 @@ export default function TripPage() {
     </div>
   )
 }
-
