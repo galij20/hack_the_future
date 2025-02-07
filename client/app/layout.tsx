@@ -4,6 +4,7 @@ import { Inter } from 'next/font/google'
 import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/toaster"
 import Navigation from '@/components/navigation'
+import Link from 'next/link'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -29,6 +30,9 @@ export default function RootLayout({
           <div className="min-h-screen bg-gradient-to-b from-background to-muted">
             <Navigation />
             <main className="container mx-auto px-4 py-6">
+              <nav>
+                <Link href="/dashboard">Dashboard</Link>
+              </nav>
               {children}
             </main>
           </div>

@@ -1,11 +1,117 @@
 "use client";
 
-import { Card } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { WalletCards, Plane, Home, Plus, ArrowRight, Calendar, Bell, ChartBar, Settings, Search, BarChart2, ChevronLeft, ChevronRight } from "lucide-react"
-import Link from "next/link"
-import { useState } from "react"
-import { AnimatePresence, motion } from "framer-motion"
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { 
+  Search, 
+  Bell, 
+  Settings, 
+  ChartBar, 
+  BarChart2, 
+  ChevronLeft, 
+  ChevronRight,
+  WalletCards,
+  Plane,
+  Home as HomeIcon,
+  Plus,
+  ArrowRight,
+  Calendar
+} from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
+
+export default function LoginPage() {
+  const router = useRouter();
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    // Reset login state
+    localStorage.removeItem('isLoggedIn');
+    // Check if user is already logged in
+    const isLoggedIn = localStorage.getItem('isLoggedIn');
+    if (isLoggedIn) {
+      router.push('/dashboard');
+    }
+    setIsLoading(false);
+  }, [router]);
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+
+    // Simple credential check (in real app, this would be an API call)
+    if (username === 'admin' && password === 'password') {
+      localStorage.setItem('isLoggedIn', 'true');
+      router.push('/dashboard');
+    } else {
+      setError('Invalid username or password');
+    }
+  };
+
+  // Don't render anything until after mounting to prevent hydration issues
+  if (!mounted) {
+    return null;
+  }
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <div className="text-gray-600">Loading...</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <div className="bg-white p-8 rounded-lg shadow-md w-96">
+        <h1 className="text-2xl font-bold mb-6 text-center">Login</h1>
+        {error && (
+          <div className="mb-4 p-2 bg-red-100 border border-red-400 text-red-700 rounded">
+            {error}
+          </div>
+        )}
+        <form onSubmit={handleLogin}>
+          <div className="mb-4">
+            <label className="block text-sm font-medium mb-1">Username</label>
+            <input 
+              type="text" 
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className="w-full px-3 py-2 border rounded-md"
+              placeholder="Enter username"
+            />
+          </div>
+          <div className="mb-6">
+            <label className="block text-sm font-medium mb-1">Password</label>
+            <input 
+              type="password" 
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full px-3 py-2 border rounded-md"
+              placeholder="Enter password"
+            />
+          </div>
+          <button 
+            type="submit"
+            className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600"
+          >
+            Login
+          </button>
+        </form>
+        <p className="mt-4 text-sm text-gray-600 text-center">
+          Use username: "admin" and password: "password"
+        </p>
+      </div>
+    </div>
+  );
+}
 
 type Event = {
   title: string;
@@ -17,7 +123,7 @@ type Events = {
   [date: string]: Event[];
 }
 
-export default function Dashboard() {
+export function Dashboard() {
   const [currentMonth, setCurrentMonth] = useState(new Date())
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
   const [showEventSidebar, setShowEventSidebar] = useState(false)
@@ -252,7 +358,7 @@ export default function Dashboard() {
         <QuickActionCard
           title="Home Assistant"
           description="Control your smart home devices"
-          icon={Home}
+          icon={HomeIcon}
           href="/home"
           stats={[
             { label: "Energy Usage", value: "12.5 kWh" },
