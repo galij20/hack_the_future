@@ -1,10 +1,10 @@
 "use client";
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { ArrowRight } from 'lucide-react'
-import { getAIRecommendations, bookTrip } from '@/app/services/tripService'
+import { getAIRecommendations, bookTrip, getTripHistory, type TripHistory } from '@/app/services/tripService'
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { format } from "date-fns";
@@ -46,6 +46,18 @@ export default function TripPage() {
     : 0;
 
   const [budget, setBudget] = useState('');
+  const [tripHistory, setTripHistory] = useState<TripHistory[]>([])
+
+  // Add useEffect to fetch trip history
+  useEffect(() => {
+    const fetchTripHistory = async () => {
+      if (view === 'history') {
+        const history = await getTripHistory()
+        setTripHistory(history)
+      }
+    }
+    fetchTripHistory()
+  }, [view])
 
   const handlePlanTrip = async () => {
     if (!destination || !days || !budget) {
@@ -331,16 +343,74 @@ export default function TripPage() {
               </div>
             </div>
           ) : view === 'history' ? (
-            <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
-              <p className="text-xl text-gray-600">No past trips found</p>
-              <Button 
-                size="lg" 
-                onClick={() => setView('plan')}
-                className="bg-blue-600 text-white hover:bg-blue-700 group"
-              >
-                Plan Your First Trip
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
+            <div className="space-y-6">
+              <h2 className="text-3xl font-semibold text-gray-900">Your Travel History</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {tripHistory.map((trip) => (
+                  <Card key={trip.id} className="flex flex-col bg-white/90 backdrop-blur-sm shadow-lg border border-gray-200">
+                    <div className="relative h-48 w-full">
+                      <img
+                        src={trip.imageUrl}
+                        alt={trip.destination}
+                        className="absolute inset-0 w-full h-full object-cover rounded-t-lg"
+                      />
+                      <div className={`absolute top-2 right-2 px-2 py-1 rounded-full text-sm text-white ${
+                        trip.status === 'completed' ? 'bg-green-500' :
+                        trip.status === 'upcoming' ? 'bg-blue-500' : 'bg-red-500'
+                      }`}>
+                        {trip.status.charAt(0).toUpperCase() + trip.status.slice(1)}
+                      </div>
+                    </div>
+                    <CardHeader>
+                      <h3 className="text-2xl font-semibold text-gray-900">{trip.destination}</h3>
+                      <p className="text-sm text-gray-600">
+                        {new Date(trip.startDate).toLocaleDateString()} - {new Date(trip.endDate).toLocaleDateString()}
+                      </p>
+                    </CardHeader>
+                    <CardContent className="flex-grow">
+                      <div className="space-y-2">
+                        <p className="text-gray-600">
+                          <span className="font-medium">Hotel:</span> {trip.hotelName}
+                        </p>
+                        <p className="text-gray-600">
+                          <span className="font-medium">Cost:</span> ${trip.cost}
+                        </p>
+                        {trip.rating && (
+                          <div className="flex items-center gap-1">
+                            <span className="font-medium text-gray-600">Rating:</span>
+                            <div className="flex text-yellow-500">
+                              {Array.from({ length: Math.floor(trip.rating) }).map((_, i) => (
+                                <span key={i}>★</span>
+                              ))}
+                            </div>
+                            <span className="text-gray-600">({trip.rating})</span>
+                          </div>
+                        )}
+                        {trip.highlights && (
+                          <div className="mt-3">
+                            <p className="font-medium text-gray-600 mb-1">Highlights:</p>
+                            <div className="flex flex-wrap gap-2">
+                              {trip.highlights.map((highlight, index) => (
+                                <span
+                                  key={index}
+                                  className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full"
+                                >
+                                  {highlight}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                      {trip.review && (
+                        <div className="mt-4">
+                          <p className="text-sm italic text-gray-600">"{trip.review}"</p>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
             </div>
           ) : null}
         </div>
