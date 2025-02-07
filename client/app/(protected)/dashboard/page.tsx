@@ -261,7 +261,7 @@ export default function Dashboard() {
         />
       </section>
 
-      <section className="space-y-6">
+      {/* <section className="space-y-6">
         <div className="flex justify-between items-center">
           <h2 className="text-2xl font-semibold">Quick Actions</h2>
         </div>
@@ -297,7 +297,7 @@ export default function Dashboard() {
             <ArrowRight className="absolute right-4 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300" />
           </Button>
         </div>
-      </section>
+      </section> */}
     </div>
   )
 }

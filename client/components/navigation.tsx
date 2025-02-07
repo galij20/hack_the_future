@@ -9,10 +9,10 @@ export default function Navigation() {
   const pathname = usePathname()
   
   const links = [
-    { href: "/dashboard", icon: HomeIcon, label: "Dashboard" },
+    { href: "/dashboard", label: "Dashboard" },
     { href: "/finance", icon: WalletCards, label: "Finance" },
     { href: "/trip", icon: Plane, label: "Trip" },
-    { href: "/home", icon: Home, label: "Home" },
+    { href: "/home", icon: Home, label: "Home Ass." },
   ]
 
   return (
@@ -37,7 +37,7 @@ export default function Navigation() {
                     : "text-muted-foreground"
                 )}
               >
-                <Icon className="h-4 w-4" />
+                {Icon && <Icon className="h-4 w-4" />}
                 <span>{label}</span>
               </Link>
             ))}

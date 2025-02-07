@@ -9,7 +9,7 @@ export default function ProtectedLayout({
   return (
     <div>
       <nav>
-        <Link href="/dashboard">Dashboard</Link>
+        {/* <Link href="/dashboard">Dashboard</Link> */}
       </nav>
       {children}
     </div>

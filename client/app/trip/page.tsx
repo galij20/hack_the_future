@@ -25,16 +25,6 @@ interface Hotel {
     imageUrl: string
 }
 
-// Add this style for the popup
-const popupStyles = `
-  .react-datepicker {
-    z-index: 10000 !important;
-  }
-  .react-datepicker__triangle {
-    z-index: 10001 !important;
-  }
-`;
-
 export default function TripPage() {
   const [view, setView] = useState<'history' | 'plan'>('history')
   const [recommendations, setRecommendations] = useState<Trip[]>([])
@@ -97,7 +87,7 @@ export default function TripPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-100 via-green-100/90 to-blue-200/95">
+    <div className="bg-gradient-to-b from-blue-100 via-green-100/90 to-blue-200/95">
       <div className="container max-w-7xl mx-auto">
         <div className="flex flex-col gap-8 p-8">
           <div className="flex flex-col gap-4">
@@ -112,7 +102,7 @@ export default function TripPage() {
               variant={view === 'history' ? 'default' : 'outline'}
               size="lg"
               onClick={() => setView('history')}
-              className={`w-40 transition-all duration-200 ease-in-out transform hover:scale-105 ${
+              className={`w-40 transition-all duration-200 ease-in-out ${
                 view === 'history' 
                   ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-md hover:shadow-lg' 
                   : 'bg-transparent text-gray-600 border-gray-300 hover:bg-gray-50 hover:border-blue-300'
@@ -124,7 +114,7 @@ export default function TripPage() {
               variant={view === 'plan' ? 'default' : 'outline'}
               size="lg"
               onClick={() => setView('plan')}
-              className={`w-40 transition-all duration-200 ease-in-out transform hover:scale-105 ${
+              className={`w-40 transition-all duration-200 ease-in-out ${
                 view === 'plan' 
                   ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-md hover:shadow-lg' 
                   : 'bg-transparent text-gray-600 border-gray-300 hover:bg-gray-50 hover:border-blue-300'
@@ -135,22 +125,22 @@ export default function TripPage() {
           </div>
 
           {view === 'plan' && (
-            <Card className="w-full max-w-2xl bg-white/90 backdrop-blur-sm shadow-lg border border-gray-200 transition-all duration-300 ease-in-out hover:shadow-2xl hover:-translate-y-2 hover:border-blue-300">
-              <CardHeader className="transition-all duration-200">
-                <h2 className="text-2xl font-semibold text-gray-900 transition-all duration-200 group-hover:text-blue-600">Plan Your Trip</h2>
-                <p className="text-gray-600 transition-all duration-200">Enter your travel details below</p>
+            <Card className="w-full max-w-2xl bg-white/90 backdrop-blur-sm shadow-lg border border-gray-200">
+              <CardHeader>
+                <h2 className="text-2xl font-semibold text-gray-900">Plan Your Trip</h2>
+                <p className="text-gray-600">Enter your travel details below</p>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div className="space-y-2 transition-all duration-200 hover:transform hover:scale-[1.01]">
+                <div className="space-y-2">
                   <label className="text-sm font-medium text-gray-700">Destination</label>
                   <Input
                     placeholder="e.g., Paris, France"
                     value={destination}
                     onChange={(e) => setDestination(e.target.value)}
-                    className="h-12 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 transition-all duration-200 hover:border-blue-400 focus:border-blue-500 focus:ring-blue-500"
+                    className="h-12 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400"
                   />
                 </div>
-                <div className="space-y-2 transition-all duration-200 hover:transform hover:scale-[1.01]">
+                <div className="space-y-2">
                   <label className="text-sm font-medium text-gray-700">Trip Dates</label>
                   <Popover>
                     <PopoverTrigger asChild>
@@ -197,7 +187,7 @@ export default function TripPage() {
                     </p>
                   )}
                 </div>
-                <div className="space-y-2 transition-all duration-200 hover:transform hover:scale-[1.01]">
+                <div className="space-y-2">
                   <label className="text-sm font-medium text-gray-700">Total Trip Budget ($)</label>
                   <Input
                     type="number"
@@ -205,7 +195,7 @@ export default function TripPage() {
                     placeholder="e.g., 2000"
                     value={budget}
                     onChange={(e) => setBudget(e.target.value)}
-                    className="h-12 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 transition-all duration-200 hover:border-blue-400 focus:border-blue-500 focus:ring-blue-500"
+                    className="h-12 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400"
                   />
                   <p className="text-sm text-gray-600">
                     Enter your total budget for the entire trip in USD
@@ -217,10 +207,10 @@ export default function TripPage() {
                   size="lg" 
                   onClick={handlePlanTrip} 
                   disabled={loading}
-                  className="w-full bg-blue-600 text-white hover:bg-blue-700 transition-all duration-300 ease-in-out transform hover:scale-[1.02] hover:shadow-lg disabled:opacity-50 disabled:hover:scale-100 group"
+                  className="w-full bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 group"
                 >
                   Find Hotels & Recommendations
-                  <ArrowRight className="ml-2 h-5 w-5 transition-transform duration-200 group-hover:translate-x-1" />
+                  <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </CardFooter>
             </Card>
@@ -257,7 +247,7 @@ export default function TripPage() {
                 {selectedTrip.hotels
                   .filter(hotel => !budget || hotel.price * days <= parseFloat(budget))
                   .map((hotel) => (
-                  <Card key={hotel.id} className="flex flex-col overflow-hidden bg-white/90 backdrop-blur-sm shadow-lg border border-gray-200 transition-all duration-200 ease-in-out hover:shadow-xl hover:border-blue-200 hover:-translate-y-1">
+                  <Card key={hotel.id} className="flex flex-col overflow-hidden bg-white/90 backdrop-blur-sm shadow-lg border border-gray-200">
                     {hotel.imageUrl && (
                       <div className="relative h-48 w-full">
                         <img
@@ -297,11 +287,11 @@ export default function TripPage() {
                     <CardFooter>
                       <Button
                         size="lg"
-                        className="w-full bg-blue-600 text-white hover:bg-blue-700 transition-all duration-200 ease-in-out transform hover:scale-[1.02] hover:shadow-lg group"
+                        className="w-full bg-blue-600 text-white hover:bg-blue-700 group"
                         onClick={() => handleBookHotel(hotel.id)}
                       >
                         Book Now
-                        <ArrowRight className="ml-2 h-5 w-5 transition-transform duration-200 group-hover:translate-x-1" />
+                        <ArrowRight className="ml-2 h-5 w-5" />
                       </Button>
                     </CardFooter>
                   </Card>
@@ -315,7 +305,7 @@ export default function TripPage() {
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {recommendations.map((trip) => (
-                  <Card key={trip.id} className="flex flex-col bg-white/90 backdrop-blur-sm shadow-lg border border-gray-200 transition-all duration-200 ease-in-out hover:shadow-xl hover:border-blue-200 hover:-translate-y-1">
+                  <Card key={trip.id} className="flex flex-col bg-white/90 backdrop-blur-sm shadow-lg border border-gray-200">
                     <CardHeader>
                       <h3 className="text-2xl font-semibold text-gray-900">{trip.destination}</h3>
                     </CardHeader>
@@ -329,11 +319,11 @@ export default function TripPage() {
                     <CardFooter>
                       <Button
                         size="lg"
-                        className="w-full bg-blue-600 text-white hover:bg-blue-700 transition-all duration-200 ease-in-out transform hover:scale-[1.02] hover:shadow-lg group"
+                        className="w-full bg-blue-600 text-white hover:bg-blue-700 group"
                         onClick={() => handleViewHotels(trip)}
                       >
                         View Hotels
-                        <ArrowRight className="ml-2 h-5 w-5 transition-transform duration-200 group-hover:translate-x-1" />
+                        <ArrowRight className="ml-2 h-5 w-5" />
                       </Button>
                     </CardFooter>
                   </Card>
@@ -346,10 +336,10 @@ export default function TripPage() {
               <Button 
                 size="lg" 
                 onClick={() => setView('plan')}
-                className="bg-blue-600 text-white hover:bg-blue-700 transition-all duration-200 ease-in-out transform hover:scale-105 hover:shadow-lg group"
+                className="bg-blue-600 text-white hover:bg-blue-700 group"
               >
                 Plan Your First Trip
-                <ArrowRight className="ml-2 h-5 w-5 transition-transform duration-200 group-hover:translate-x-1" />
+                <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </div>
           ) : null}
