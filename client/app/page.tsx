@@ -1,26 +1,234 @@
+"use client";
+
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { WalletCards, Plane, Home, Plus } from "lucide-react"
+import { WalletCards, Plane, Home, Plus, ArrowRight, Calendar, Bell, ChartBar, Settings, Search, BarChart2, ChevronLeft, ChevronRight } from "lucide-react"
 import Link from "next/link"
+import { useState } from "react"
+import { AnimatePresence, motion } from "framer-motion"
+
+type Event = {
+  title: string;
+  time: string;
+  location: string;
+}
+
+type Events = {
+  [date: string]: Event[];
+}
 
 export default function Dashboard() {
+  const [currentMonth, setCurrentMonth] = useState(new Date())
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null)
+  const [showEventSidebar, setShowEventSidebar] = useState(false)
+
+  // Update events with type
+  const events: Events = {
+    "2024-01-15": [
+      { title: "Team Meeting", time: "2:00 PM", location: "Virtual Conference Room" },
+      { title: "Project Review", time: "4:00 PM", location: "Meeting Room 2A" }
+    ],
+    "2024-01-20": [
+      { title: "Client Presentation", time: "3:30 PM", location: "Main Conference Room" }
+    ]
+  }
+
+  const getDaysInMonth = (date: Date) => {
+    const year = date.getFullYear()
+    const month = date.getMonth()
+    const firstDay = new Date(year, month, 1)
+    const lastDay = new Date(year, month + 1, 0)
+    const daysInMonth = []
+    
+    // Add empty slots for days before the first of the month
+    for (let i = 0; i < firstDay.getDay(); i++) {
+      daysInMonth.push(null)
+    }
+    
+    // Add all days of the month
+    for (let i = 1; i <= lastDay.getDate(); i++) {
+      daysInMonth.push(new Date(year, month, i))
+    }
+
+    // Add empty slots for days after the last of the month to complete grid
+    const remainingSlots = 35 - daysInMonth.length // 5 rows * 7 days
+    for (let i = 0; i < remainingSlots; i++) {
+      daysInMonth.push(null)
+    }
+    
+    return daysInMonth
+  }
+
+  const handleDateClick = (date: Date) => {
+    setSelectedDate(date)
+    setShowEventSidebar(true)
+  }
+
   return (
     <div className="space-y-8">
       {/* Welcome Section */}
-      <section className="space-y-4">
-        <h1 className="text-4xl font-bold">Welcome back, User</h1>
-        <p className="text-muted-foreground">
-          {new Date().toLocaleDateString('en-US', { 
-            weekday: 'long', 
-            year: 'numeric', 
-            month: 'long', 
-            day: 'numeric' 
-          })}
-        </p>
+      <section className="space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h1 className="text-5xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
+              Welcome back, User
+            </h1>
+            <p className="text-lg text-muted-foreground mt-2">
+              {new Date().toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+              })}
+            </p>
+          </div>
+          <div className="flex gap-4 mt-4 sm:mt-0">
+            <div className="relative">
+              <input
+                type="search"
+                placeholder="Search..."
+                className="px-4 py-2 rounded-lg border border-primary/20 focus:outline-none focus:border-primary"
+              />
+              <Search className="absolute right-3 top-2.5 h-4 w-4 text-muted-foreground" />
+            </div>
+            <Button className="bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all duration-300">
+              <Bell className="h-4 w-4 mr-2" />
+              Notifications
+            </Button>
+            <Button className="bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all duration-300">
+              <Settings className="h-4 w-4 mr-2" />
+              Settings
+            </Button>
+          </div>
+        </div>
       </section>
 
-      
-      <section className="grid gap-4 md:grid-cols-3">
+      {/* Analytics Overview */}
+      <section className="space-y-4">
+        <div className="flex justify-between items-center">
+          <h2 className="text-2xl font-semibold">Analytics Overview</h2>
+        </div>
+        <div className="grid gap-6 md:grid-cols-3">
+          <motion.div
+            whileHover={{ scale: 1.02 }}
+            transition={{ type: "spring", stiffness: 300 }}
+            className="md:col-span-2"
+          >
+            <Card className="p-8 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20">
+              <ChartBar className="h-10 w-10 text-green-600 mb-6" />
+              <h3 className="text-xl font-semibold">Total Savings</h3>
+              <p className="text-4xl font-bold mt-4 mb-4">$12,450</p>
+              <div className="flex items-center mt-4 bg-green-200/50 dark:bg-green-800/30 p-3 rounded-lg">
+                <BarChart2 className="h-5 w-5 text-green-600 mr-3" />
+                <p className="text-base text-green-600">↑ 12% from last month</p>
+              </div>
+            </Card>
+          </motion.div>
+
+          <Card className="p-3 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center">
+                <Calendar className="h-5 w-5 text-blue-600" />
+                <h3 className="text-base font-semibold ml-2">Calendar</h3>
+              </div>
+              <div className="flex items-center gap-1">
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={() => setCurrentMonth(new Date(currentMonth.setMonth(currentMonth.getMonth() - 1)))}
+                  className="h-6 w-6 p-0 hover:bg-blue-100 dark:hover:bg-blue-800/20"
+                >
+                  <ChevronLeft className="h-3 w-3" />
+                </Button>
+                <span className="text-xs font-medium px-2">
+                  {currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                </span>
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={() => setCurrentMonth(new Date(currentMonth.setMonth(currentMonth.getMonth() + 1)))}
+                  className="h-6 w-6 p-0 hover:bg-blue-100 dark:hover:bg-blue-800/20"
+                >
+                  <ChevronRight className="h-3 w-3" />
+                </Button>
+              </div>
+            </div>
+            <div className="grid grid-cols-7 gap-1 text-center mb-1">
+              {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map(day => (
+                <div key={day} className="text-[10px] font-medium text-muted-foreground">{day}</div>
+              ))}
+            </div>
+            <div className="grid grid-cols-7 gap-1">
+              {getDaysInMonth(currentMonth).map((date, index) => (
+                <motion.div
+                  key={index}
+                  whileHover={{ scale: date ? 1.1 : 1 }}
+                  whileTap={{ scale: date ? 0.95 : 1 }}
+                  className={`
+                    relative aspect-square flex items-center justify-center rounded-sm text-[10px]
+                    ${date ? 'hover:bg-blue-100 dark:hover:bg-blue-800/20 cursor-pointer' : ''}
+                    ${selectedDate && date?.toDateString() === selectedDate.toDateString() ? 'bg-blue-200 dark:bg-blue-800/40' : ''}
+                  `}
+                  onClick={() => date && handleDateClick(date)}
+                >
+                  {date?.getDate()}
+                  {date && events[date.toISOString().split('T')[0]] && (
+                    <motion.div 
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      className="absolute bottom-0.5 w-0.5 h-0.5 rounded-full bg-blue-600"
+                    />
+                  )}
+                </motion.div>
+              ))}
+            </div>
+          </Card>
+        </div>
+      </section>
+
+      {/* Event Sidebar */}
+      <AnimatePresence>
+        {showEventSidebar && selectedDate && events[selectedDate.toISOString().split('T')[0]] && (
+          <motion.div
+            initial={{ x: '100%', opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: '100%', opacity: 0 }}
+            transition={{ type: "spring", damping: 20 }}
+            className="fixed right-0 top-0 h-full w-80 sm:w-96 bg-white dark:bg-gray-900 shadow-2xl p-4 z-50"
+          >
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-semibold">
+                Events for {selectedDate.toLocaleDateString()}
+              </h3>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowEventSidebar(false)}
+                className="h-8 w-8 p-0"
+              >
+                ×
+              </Button>
+            </div>
+            <div className="space-y-3">
+              {events[selectedDate.toISOString().split('T')[0]].map((event, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: index * 0.1 }}
+                  className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg"
+                >
+                  <p className="font-medium">{event.title}</p>
+                  <p className="text-sm text-blue-600 mt-1">{event.time}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">{event.location}</p>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <section className="grid gap-6 md:grid-cols-3">
         <QuickActionCard
           title="Finance Companion"
           description="Track your expenses and manage your budget"
@@ -52,16 +260,43 @@ export default function Dashboard() {
           ]}
         />
       </section>
-      <section className="grid gap-4 md:grid-cols-3">
-        <Button className="w-full shadow-neomorphic" variant="outline">
-          <Plus className="mr-2 h-4 w-4" /> Add Transaction
-        </Button>
-        <Button className="w-full shadow-neomorphic" variant="outline">
-          <Plus className="mr-2 h-4 w-4" /> Plan Trip
-        </Button>
-        <Button className="w-full shadow-neomorphic" variant="outline">
-          <Plus className="mr-2 h-4 w-4" /> Add Device
-        </Button>
+
+      <section className="space-y-6">
+        <div className="flex justify-between items-center">
+          <h2 className="text-2xl font-semibold">Quick Actions</h2>
+        </div>
+        <div className="grid gap-4 md:grid-cols-3">
+          <Button 
+            className="group relative h-24 w-full bg-gradient-to-br from-primary/5 to-primary/10 hover:from-primary/10 hover:to-primary/20 shadow-lg transition-all duration-300" 
+            variant="outline"
+          >
+            <div className="flex items-center">
+              <Plus className="mr-3 h-5 w-5 text-primary" />
+              <span className="text-lg">Add Transaction</span>
+            </div>
+            <ArrowRight className="absolute right-4 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300" />
+          </Button>
+          <Button 
+            className="group relative h-24 w-full bg-gradient-to-br from-primary/5 to-primary/10 hover:from-primary/10 hover:to-primary/20 shadow-lg transition-all duration-300" 
+            variant="outline"
+          >
+            <div className="flex items-center">
+              <Plus className="mr-3 h-5 w-5 text-primary" />
+              <span className="text-lg">Plan Trip</span>
+            </div>
+            <ArrowRight className="absolute right-4 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300" />
+          </Button>
+          <Button 
+            className="group relative h-24 w-full bg-gradient-to-br from-primary/5 to-primary/10 hover:from-primary/10 hover:to-primary/20 shadow-lg transition-all duration-300" 
+            variant="outline"
+          >
+            <div className="flex items-center">
+              <Plus className="mr-3 h-5 w-5 text-primary" />
+              <span className="text-lg">Add Device</span>
+            </div>
+            <ArrowRight className="absolute right-4 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300" />
+          </Button>
+        </div>
       </section>
     </div>
   )
@@ -81,27 +316,29 @@ function QuickActionCard({
   stats: { label: string; value: string }[]
 }) {
   return (
-    <Link href={href}>
-    <Card className="p-6 transition-all hover:shadow-neomorphic">
-      <div className="flex items-center space-x-4">
-        <div className="rounded-full bg-primary/10 p-3">
-          <Icon className="h-6 w-6 text-primary" />
-        </div>
-        <div>
-          <h3 className="font-semibold">{title}</h3>
-          <p className="text-sm text-muted-foreground">{description}</p>
-        </div>
-      </div>
-      <div className="mt-4 grid grid-cols-2 gap-4">
-        {stats.map((stat, index) => (
-          <div key={index}>
-            <p className="text-sm text-muted-foreground">{stat.label}</p>
-            <p className="font-semibold">{stat.value}</p>
+    <Link href={href} className="block group">
+      <Card className="p-8 transition-all duration-300 hover:shadow-xl hover:scale-[1.02] bg-gradient-to-br from-white to-primary/5 dark:from-gray-900 dark:to-primary/10">
+        <div className="flex items-start space-x-6">
+          <div className="rounded-2xl bg-primary/10 p-4 group-hover:bg-primary/20 transition-colors duration-300">
+            <Icon className="h-8 w-8 text-primary" />
           </div>
-        ))}
-      </div>
-    </Card>
+          <div className="flex-1">
+            <h3 className="text-xl font-semibold">{title}</h3>
+            <p className="text-sm text-muted-foreground mt-1">{description}</p>
+          </div>
+        </div>
+        <div className="mt-6 grid grid-cols-2 gap-6">
+          {stats.map((stat, index) => (
+            <div key={index} className="bg-primary/5 rounded-lg p-3 group-hover:bg-primary/10 transition-colors duration-300">
+              <p className="text-sm font-medium text-primary">{stat.label}</p>
+              <p className="text-lg font-bold mt-1">{stat.value}</p>
+            </div>
+          ))}
+        </div>
+      </Card>
     </Link>
   )
 }
+
+
 

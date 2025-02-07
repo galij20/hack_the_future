@@ -58,20 +58,7 @@ export default function HomePage() {
           </Card>
         </div>
 
-        <div className="mt-16 text-center">
-          <h3 className="text-2xl font-semibold mb-4">
-            Take Control of Your Home
-          </h3>
-          <p className="text-gray-600 mb-8">
-            Access all your smart devices from one central dashboard
-          </p>
-          <Link href="/dashboard">
-            <Button size="lg">
-              Smart Home Dashboard
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
-          </Link>
-        </div>
+        
       </div>
     </div>
   )
