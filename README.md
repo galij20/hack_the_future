@@ -6,7 +6,10 @@ Required Tools:
 -tailwindcss
 
 After git cloning:
-1.
+1.cd server 
+  npm install express mongoose dotenv cors plaid axios
+2.cd client 
+  npm install express mongoose dotenv cors plaid axios
 
 Running the Application
 1. Start the Backend
