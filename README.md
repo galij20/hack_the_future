@@ -3,13 +3,14 @@ project for hack_the_future hackathon
 
 Required Tools:
 -npm
--tailwindcss
 
 After git cloning:
 1.cd server 
-  npm install express mongoose dotenv cors plaid axios
+  npm install 
+  npm run dev
 2.cd client 
-  npm install express mongoose dotenv cors plaid axios
+  npm install 
+  npm run dev
 
 Running the Application
 1. Start the Backend
