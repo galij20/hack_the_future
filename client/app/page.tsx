@@ -1,6 +1,7 @@
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { WalletCards, Plane, Home, Plus } from "lucide-react"
+import Link from "next/link"
 
 export default function Dashboard() {
   return (
@@ -18,7 +19,7 @@ export default function Dashboard() {
         </p>
       </section>
 
-      {/* Quick Actions */}
+      
       <section className="grid gap-4 md:grid-cols-3">
         <QuickActionCard
           title="Finance Companion"
@@ -51,8 +52,6 @@ export default function Dashboard() {
           ]}
         />
       </section>
-
-      {/* Quick Add Section */}
       <section className="grid gap-4 md:grid-cols-3">
         <Button className="w-full shadow-neomorphic" variant="outline">
           <Plus className="mr-2 h-4 w-4" /> Add Transaction
@@ -82,6 +81,7 @@ function QuickActionCard({
   stats: { label: string; value: string }[]
 }) {
   return (
+    <Link href={href}>
     <Card className="p-6 transition-all hover:shadow-neomorphic">
       <div className="flex items-center space-x-4">
         <div className="rounded-full bg-primary/10 p-3">
@@ -101,5 +101,7 @@ function QuickActionCard({
         ))}
       </div>
     </Card>
+    </Link>
   )
 }
+
