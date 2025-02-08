@@ -1,6 +1,5 @@
-# Trip Recommendation and IoT Integration System
-
-![Project Banner](https://via.placeholder.com/1200x400) <!-- Add a relevant banner image -->
+## NeoLiving
+# Trip Recommendation, Finance Management,  and IoT Integration System
 
 A full-stack application that provides trip recommendations using Amadeus API and integrates with open-source IoT APIs for smart device management.
 
@@ -41,12 +40,12 @@ A full-stack application that provides trip recommendations using Amadeus API an
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/trip-iot-project.git
+   git clone https://github.com/Hack-the-Future-0-1/The-G-s.git
    ```
 
 2. Navigate to the project directory:
    ```bash
-   cd trip-iot-project
+   cd NeoLiving
    ```
 
 3. Install dependencies:
@@ -111,7 +110,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 Project Maintainer: [Your Name]  
 Email: your.email@example.com  
-Project Link: [https://github.com/yourusername/trip-iot-project](https://github.com/yourusername/trip-iot-project)
+Project Link: [https://github.com/Hack-the-Future-0-1/The-G-s.git](https://github.com/Hack-the-Future-0-1/The-G-s)
 ```
 
 </rewritten_file>
