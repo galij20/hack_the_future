@@ -1,5 +1,8 @@
-# hack_the_future
-project for hack_the_future hackathon 
+## hack_the_future (The G's entry)
+#NeoLiving
+project for hack_the_future hackathon
+
+
 
 Required Tools:
 -npm
