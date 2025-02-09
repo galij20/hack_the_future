@@ -65,14 +65,9 @@ A full-stack application that provides trip recommendations using Amadeus API an
    npm start
    ```
 
-### API Endpoints
-
 **Trip Recommendations**:
 - `GET /api/trips?location=KTM` - Get trip recommendations for Kathmandu
 
-**IoT Integration**:
-- `GET /api/iot/devices` - List all IoT devices
-- `POST /api/iot/devices` - Add a new IoT device
 
 ## Project Structure
 
@@ -80,12 +75,10 @@ A full-stack application that provides trip recommendations using Amadeus API an
 project-root/
 ├── config/            # Configuration files
 ├── controllers/       # Route controllers
-├── models/            # Database models
-├── routes/            # API routes
+├── models/            # Database models   
 ├── services/          # Business logic and API services
 ├── public/            # Static assets
 ├── src/               # Frontend source code
-│   ├── api/           # API service layer
 │   ├── components/    # React components
 │   └── App.js         # Main application component
 ├── .env               # Environment variables
